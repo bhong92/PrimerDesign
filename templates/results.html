@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% block title %}Results{% endblock %}
+<script type="text/javascript" charset="utf8" src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.11.4/js/jquery.dataTables.js"></script>
+<script type="text/javascript" charset="utf8" src="https://cdn.datatables.net/1.10.25/js/dataTables.bootstrap5.js"></script>
+
+{% block content %}
+<h1>Results</h1>
+<table id="data" class="table table-striped">
+<thead>
+    <tr>
+        <th>Primer</th>
+        <th>TM</th>
+        <th>GC%</th>
+    </tr>
+</thead>
+<tbody>
+{% for d in content %}
+{% for i in content[d] %}
+<tr>
+    <td>{{i['seq']}}</td>
+    <td>{{i['tm']}}</td>
+    <td>{{i['gc']}}</td>
+</tr>
+{% endfor %}
+{% endfor %}
+</tbody>
+</table>
+{% endblock %}
