@@ -17,6 +17,13 @@
     </tr>
 </thead>
 <tbody>
+{% for i in content %}
+<tr>
+    <td>{{i.seq}}</td>
+    <td>{{i.tm}}</td>
+    <td>{{i.gc}}</td>
+</tr>
+{% endfor %}
 </tbody>
 </table>
 {% endblock %}
@@ -24,11 +31,10 @@
   <script>
     $(document).ready(function () {
       $('#data').DataTable({
-      ajax: '/api/data',
-        columns: [
-          {data: 'seq'},
-          {data: 'tm'},
-          {data: 'gc'},
+              columns: [
+          {orderable: false, searchable: false},
+          {searchable: false},
+          {searchable: false}
           ],
       });
     });

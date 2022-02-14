@@ -4,7 +4,6 @@ from wtforms import Form, SelectField, TextAreaField, BooleanField, validators, 
 import json
 import sys
 from flask_sqlalchemy import SQLAlchemy
-
 app = Flask(__name__)
 
 
@@ -62,7 +61,6 @@ def submit():
         p = form.primer.data
         sp = form.species.data
         primers = findPrimer(s)
-        # data(primers)
         return redirect(url_for('results'))
         # return redirect(url_for('result', seq=s, primer=p, species=sp))
     return render_template("submission.html", form=form)
@@ -159,9 +157,8 @@ def data():
 @app.route("/results")
 def results():
     print('-----result-----')
-    for i in Sequence.query:
-        print(i.to_dict())
-    return render_template("results.html")
+    _data = Sequence.query
+    return render_template("results.html", content=_data)
 
 
 @app.route("/BLAST")
