@@ -7,10 +7,12 @@
 
 </script>
 {% block content %}
-<h1>Results</h1>
+<h2>Results</h2>
+<button>Back to Submission</button>
 <table id="data" class="table table-striped">
 <thead>
     <tr>
+        <th>Plot</th>
         <th>Primer</th>
         <th>TM</th>
         <th>GC%</th>
@@ -19,9 +21,10 @@
 <tbody>
 {% for i in content %}
 <tr>
-    <td>{{i.seq}}</td>
-    <td>{{i.tm}}</td>
-    <td>{{i.gc}}</td>
+    <td data-bs-toggle="tooltip" title="Click Plot"><img src="/templates/example_nucleotide.png" onclick="window.open(this.src)"></td>
+    <td data-bs-toggle="tooltip" title="Click for BLAST">{{i.seq}}</td>
+    <td data-bs-toggle="tooltip" id='tm' title="Melting Temperature">{{i.tm}}</td>
+    <td data-bs-toggle="tooltip" id='gc' title="GC Content">{{i.gc}}</td>
 </tr>
 {% endfor %}
 </tbody>
@@ -32,6 +35,7 @@
     $(document).ready(function () {
       $('#data').DataTable({
               columns: [
+              null,
           {orderable: false, searchable: false},
           {searchable: false},
           {searchable: false}
@@ -39,4 +43,14 @@
       });
     });
   </script>
+<script>
+$(document).ready(function(){
+    $('[data-bs-toggle="tooltip"]').tooltip();
+});
+</script>
+<script>
+$(document).ready(function(){
+ $("#tm").css("background-color", "yellow");
+});
+</script>
 {% endblock %}

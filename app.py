@@ -1,14 +1,15 @@
-from flask import Flask, redirect, url_for, render_template, request, jsonify
+from flask import Flask, redirect, url_for, render_template, request, jsonify,session
 from flask_bootstrap import Bootstrap
 from wtforms import Form, SelectField, TextAreaField, BooleanField, validators, IntegerField
 import json
 import sys
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemyt
+import scrapper
 app = Flask(__name__)
 
 
 class SubmissionForm(Form):
-    seq = TextAreaField('Sequence')
+    seq = TextAreaField('Sequence', [validators.InputRequired()])
     primer = SelectField('Gene or Primer', choices=[(1, 'GENE'), (2, 'PRIMER')])
     species = SelectField('Species', choices=[(1, 'HUMAN'), (2, 'MOUSE'), (3, 'E.COLI')])
 

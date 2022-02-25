@@ -1,11 +1,11 @@
 {% extends "base.html" %}
 {% block title %}Input Sequence{% endblock %}
 {% block content %}
-<h1>Input Sequence</h1>
+<h2>Input Sequence</h2>
 <body>
 {% from "includes/_formhelpers.html" import render_field %}
 <form method="POST">
-    <div class="form-group">{{render_field(form.seq)}}</div>
+    <div type="text" class="form-group" required>{{render_field(form.seq)}}</div>
     <div class="form-group">{{render_field(form.primer)}}</div>
     <div class="form-group">{{render_field(form.species)}}</div>
     <p><input class="btn btn-primary" type="submit" value="Analyze">
