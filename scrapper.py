@@ -139,15 +139,15 @@ def getJSON(e):
     with open('example.json', 'w', encoding="utf-8") as outfile:
         outfile.write(jsonFile)
 
-url = "https://en.wikipedia.org/wiki/" + 'hydrogen'
-response = requests.get(
-    url=url
-)
-soup = BeautifulSoup(response.content, 'html.parser')
-
-allTxt = soup.get_text(strip=True)
-c = 0
-print(allTxt)
+# url = "https://en.wikipedia.org/wiki/" + 'hydrogen'
+# response = requests.get(
+#     url=url
+# )
+# soup = BeautifulSoup(response.content, 'html.parser')
+#
+# allTxt = soup.get_text(strip=True)
+# c = 0
+# print(allTxt)
 # info = allTxt[10:14]
 # string = ''
 # for i in info:
