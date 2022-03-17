@@ -8,8 +8,8 @@
 </script>
 {% block content %}
 <h2>Results</h2>
-<button onclick="history.back()">Back to Submission</button>
-<table id="data" class="table table-striped">
+<button class="btn btn-primary" onclick="history.back()">Back to Submission</button>
+<table id="data" class="table table-condensed table-striped table-bordered container-fluid">
 <thead>
     <tr>
         <th>Plot</th>
@@ -24,12 +24,12 @@
     <td data-bs-toggle="tooltip" title="Click Plot" >
         {% from "includes/_formhelpers.html" import render_field %}
         <form method="POST">
-        <input class="btn btn-primary" type="submit" value={{i.id}} name="id">
+            <button class="btn btn-primary" type="submit" value={{i.id}} name="id"><i class="big chart bar icon"></i></button>
         </form>
     </td>
-    <td>{{i.seq}}</td>
-    <td data-bs-toggle="tooltip" id='tm' title="A high melting temperature can cause problems with PCR">{{i.tm}}</td>
-    <td data-bs-toggle="tooltip" id='gc' title="A high GC content can cause problems with PCR">{{i.gc}}</td>
+    <td class="sequence"><input type="submit" value="{{i.seq}}" name="sequence"></td>
+    <td data-bs-toggle="tooltip" class="tm" id='tm' title="A high melting temperature can cause problems with PCR">{{i.tm}}</td>
+    <td data-bs-toggle="tooltip" class="gc" id='gc' title="A high GC content can cause problems with PCR">{{i.gc}}</td>
 </tr>
 {% endfor %}
 </tbody>
@@ -55,18 +55,18 @@ $(document).ready(function(){
 </script>
 <script>
 $(document).ready(function(){
-    var str_tm = $("#tm").html();
+    var str_tm = $(".tm").html();
     var tm = parseInt(str_tm);
         console.log(tm);
     if (tm > 65 || tm < 55){
-        $("#tm").css("background-color", "yellow");
+        $(".tm").css("background-color", "yellow");
     }
 
-    var str_gc = $("#gc").html();
+    var str_gc = $(".gc").html();
     var gc = parseInt(str_gc);
         console.log(gc);
     if (gc > 60 || gc < 40){
-        $("#gc").css("background-color", "yellow");
+        $(".gc").css("background-color", "yellow");
     }
 
 });

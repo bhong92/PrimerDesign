@@ -1,16 +1,24 @@
 {% extends "base.html" %}
+<link rel= "stylesheet" type= "text/css" href= "static/styles/mainpage.css">
 {% block title %}Input Sequence{% endblock %}
 {% block content %}
-<h2>Input Sequence</h2>
-<h6>To get started, paste in the sequence in the field and choose 'GENE' and the corresponding species</h6>
+<div class="jumbotron">
+    <div class="text-center"><h2>Input Sequence</h2></div>
+<div class="container-fluid">
+    <h6 >To get started, paste in the sequence in the field and choose 'GENE' and the corresponding species</h6>
 <h6>If just analyzing primer, select 'PRIMER' and analyze </h6>
+</div>
+</div>
+
 <body>
 {% from "includes/_formhelpers.html" import render_field %}
-<form method="POST">
-    <div type="text" class="form-group" required>{{render_field(form.seq)}}</div>
+<div class="container-fluid" id="submission">
+    <form method="POST">
+        <div class="form-group" >{{render_field(form.seq)}}</div>
     <div class="form-group">{{render_field(form.primer)}}</div>
-    <div class="form-group">{{render_field(form.species)}}</div>
+        <div data-bs-toggle="tooltip" title="Enter a value between 20 and 30" type="number" class="form-group">{{render_field(form.bpSize)}}</div>
     <p><input class="btn btn-primary" type="submit" value="Analyze">
 </form>
+</div>
 </body>
 {% endblock %}

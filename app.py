@@ -1,11 +1,6 @@
-from flask import Flask, redirect, url_for, render_template, request, jsonify, session, send_file, send_from_directory, flash
-from flask_bootstrap import Bootstrap
-from wtforms import Form, SelectField, TextAreaField, BooleanField, validators, IntegerField
-import json
-import sys
+from flask import Flask, redirect, url_for, render_template, request
+from wtforms import Form, SelectField, TextAreaField, validators, IntegerField
 from flask_sqlalchemy import SQLAlchemy
-from PIL import Image, ImageDraw as ID
-import io
 import os
 
 app = Flask(__name__)
@@ -17,16 +12,18 @@ class SubmissionForm(Form):
     seq = TextAreaField('Sequence', [validators.InputRequired()])
     primer = SelectField('Gene or Primer', choices=[(1, 'GENE'), (2, 'PRIMER')])
     species = SelectField('Species', choices=[(1, 'HUMAN'), (2, 'MOUSE'), (3, 'E.COLI')])
+    bpSize = IntegerField('bpSize', [validators.NumberRange(20, 30)])
 
 class PictureData(Form):
     id = IntegerField()
-
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-
+'''
+Model class to hold primer values
+'''
 class Sequence(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     seq = db.Column(db.String(), index=True)
@@ -58,21 +55,24 @@ def submit():
     if request.method == 'POST':
         db.drop_all()
         db.create_all()
-        s = form.seq.data
+        s = form.seq.data.upper()
         p = form.primer.data
-        sp = form.species.data
+        bpSize = form.bpSize.data
         if p == '1':
-            findPrimer(s)
+            findPrimer(s, bpSize)
         else:
             processPrimer(s)
         return redirect(url_for('results'))
     return render_template("submission.html", form=form)
 
-
-def findPrimer(seq):
+'''
+For gene use, iterates through gene to return array of
+potential primers that can be used
+'''
+def findPrimer(seq, bpSize):
     l = len(seq)
     beg = 0
-    end = 20
+    end = bpSize
     primers = dict()
     primers['data'] = []
     while end != l:
@@ -94,6 +94,10 @@ def findPrimer(seq):
         end += 1
     return primers
 
+'''
+For single primer use, regardless of
+values will get added to database
+'''
 def processPrimer(seq):
     param = calculate(seq)
     newData = Sequence(
@@ -108,6 +112,11 @@ def processPrimer(seq):
     db.session.add(newData)
     db.session.commit()
 
+'''
+Takes in a sequence string and returns the
+temperature GC content and count of each 
+nucleotide
+'''
 def calculate(seq):
     seq = seq.upper()
     a = seq.count('A')
@@ -125,6 +134,7 @@ def data():
     return {'data': [i.to_dict() for i in Sequence.query]}
 
 
+
 @app.route("/results", methods=['GET', 'POST'])
 def results():
     _data = Sequence.query
@@ -136,42 +146,39 @@ def results():
                 if '.png' in f:
                     fn = file_name + '/tmp/' + f
                     os.remove(fn)
-        primerID = request.form['id']
-        seq = Sequence.query.get(primerID).seq
-        A = Sequence.query.get(primerID).values_A
-        T = Sequence.query.get(primerID).values_T
-        G = Sequence.query.get(primerID).values_G
-        C = Sequence.query.get(primerID).values_C
-        toPlot = {'title': seq,
-                  'x_label': 'Nucleotides',
-                  'y_label': 'Frequency',
-                  'values': [{'label': 'A', 'value': A},
-                             {'label': 'T', 'value': T},
-                             {'label': 'G', 'value': G},
-                             {'label': 'C', 'value': C}],
-                  'type': 'bar'}
+        if request.form['id']:
+            return getPlot(request.form['id'])
 
-        url = 'http://127.0.0.1:8000/api/plot'
-        url2 = 'http://127.0.0.1:8000/plot'
-        requests.post(url, json=toPlot)
-        # x = requests.post(url, json=toPlot)
-        # stream = io.BytesIO(x.content)
-        # img = Image.open(stream)
-        # file = 'plot' + str(primerID) + '.png'
-        # file_name= file_name + '/tmp/' + file
-        # img.save(file_name, 'PNG')
 
-        # flash(send_file(file_name, mimetype='image/gif'))
-        # i = send_from_directory(app.config['tmp'], file)
-        return render_template('index.html', content=url2, seq=seq)
 
 
     return render_template("results.html", content=_data)
 
+'''
+Sends a POST request to microservice and returns the plot
+image generated from data
+'''
+def getPlot(requestForm):
+    primerID = requestForm
+    seq = Sequence.query.get(primerID).seq
+    A = Sequence.query.get(primerID).values_A
+    T = Sequence.query.get(primerID).values_T
+    G = Sequence.query.get(primerID).values_G
+    C = Sequence.query.get(primerID).values_C
 
-@app.route("/BLAST")
-def blast():
-    return render_template("blast.html")
+    toPlot = {'title': seq,
+              'x_label': 'Nucleotides',
+              'y_label': 'Frequency',
+              'values': [{'label': 'A', 'value': A},
+                         {'label': 'T', 'value': T},
+                         {'label': 'G', 'value': G},
+                         {'label': 'C', 'value': C}],
+              'type': 'bar'}
+
+    url = 'http://127.0.0.1:8000/api/plot'
+    url2 = 'http://127.0.0.1:8000/plot'
+    requests.post(url, json=toPlot)
+    return render_template('index.html', content=url2, seq=seq)
 
 
 if __name__ == "__main__":
